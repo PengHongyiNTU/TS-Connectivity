@@ -51,39 +51,70 @@ def centralized_train(dataset_name,
         "weight_decay": weight_decay,
         "optimizer_type": optimizer_type,
         "max_epochs": max_epochs,
+        'num_classes': num_classes,
     }
+    run_experiments(model, 
+                    trainset, testset, valset, 
+                    hyperparameters, 
+                    enable_wandb_logging, 
+                    device,
+                    project_name="local-baseline",
+                    group_name=f'{dataset_name}-{model_name}')
+    
+def run_experiments(model, 
+                    trainset,
+                    testset,
+                    valset,
+                    hyperparameters,
+                    enable_wandb_logging=False,
+                    device="cpu",
+                    project_name="local-baseline",
+                    group_name="local-baseline",):
+    
+    warnings.filterwarnings("ignore")
+    torch.set_float32_matmul_precision("high")
     if enable_wandb_logging == True:
         run = wandb.init(
-            project="local-baseline",
+            project=project_name,
             config=hyperparameters,
-            group=f"{dataset_name}-{model_name}",
+            group=group_name,
         )
         logger = WandbLogger(run=run)
     else:
         logger = None
+    num_classes = hyperparameters["num_classes"]
+    lr = hyperparameters["lr"]
+    momentum = hyperparameters["momentum"]
+    weight_decay = hyperparameters["weight_decay"]
+    optimizer_type = hyperparameters["optimizer_type"]
+    max_epochs = hyperparameters["max_epochs"]
+    batch_size = hyperparameters["batch_size"]
     ln_model = SimpleWrapper(
-        model, 
-        num_classes, 
-        lr, 
-        momentum, 
-        weight_decay, 
-        optimizer_type, 
+        model,
+        num_classes,
+        lr,
+        momentum,
+        weight_decay,
+        optimizer_type,
         max_epochs
-    ) 
-    train_loader = DataLoader(trainset, batch_size=batch_size, shuffle=True, num_workers=4)
-    val_loader = DataLoader(valset, batch_size=batch_size, shuffle=False, num_workers=4)
-    test_loader = DataLoader(testset, batch_size=batch_size, shuffle=False, num_workers=4)
+    )
+    train_loader = DataLoader(
+        trainset, batch_size=batch_size, shuffle=True, num_workers=0)
+    val_loader = DataLoader(valset, batch_size=batch_size,
+                            shuffle=False, num_workers=4)
+    test_loader = DataLoader(
+        testset, batch_size=batch_size, shuffle=False, num_workers=0)
     checkpoint_callback = ModelCheckpoint(
         monitor='val_avg_acc',
         dirpath='models/centralized_baselines',
-        filename=f'{dataset_name}-{model_name}',
+        filename=group_name,
         save_top_k=1,
         mode='max'
     )
     trainer = Trainer(
         max_epochs=max_epochs,
         accelerator='gpu' if device != 'cpu' else None,
-        devices=[int(args.device)] if device != 'cpu' else None,
+        devices=[int(device)] if device != 'cpu' else None,
         enable_model_summary=True,
         logger=logger,
         callbacks=[checkpoint_callback],
@@ -94,10 +125,8 @@ def centralized_train(dataset_name,
     final_test_acc = test_results[0]["test_avg_acc"]
     print(f"Final Test Loss: {final_test_loss:.4f}")
     print(f"Final Test Accuracy: {final_test_acc:.4f}")
-
     if enable_wandb_logging:
         run.finish()
-
     print("Training and testing completed!")
     
 def set_seed(seed=42):
