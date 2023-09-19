@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.9 (ray)" project-jdk-type="Python SDK" />
+  <component name="UnattendedHostPersistenceState">
+    <option name="openedFilesInfos">
+      <list>
+        <OpenedFileInfo>
+          <option name="caretOffset" value="10251" />
+          <option name="fileUrl" value="file://$PROJECT_DIR$/simulator.py" />
+        </OpenedFileInfo>
+        <OpenedFileInfo>
+          <option name="caretOffset" value="10416" />
+          <option name="fileUrl" value="file://$USER_HOME$/miniconda3/envs/ray/lib/python3.9/site-packages/torch/autograd/__init__.py" />
+        </OpenedFileInfo>
+        <OpenedFileInfo>
+          <option name="caretOffset" value="45928" />
+          <option name="fileUrl" value="file://$USER_HOME$/miniconda3/envs/ray/lib/python3.9/site-packages/torch/nn/modules/module.py" />
+        </OpenedFileInfo>
+      </list>
+    </option>
+  </component>
+</project>

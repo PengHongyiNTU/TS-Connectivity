@@ -1,0 +1,44 @@
+project:
+  name: 'Test'
+  seed: 0
+  num_gpus: 2
+  verbose: True
+dataset:
+  name: 'cifar10'
+  require_val: True
+  val_portion: 0.1
+  num_workers: 128
+  require_noise: False
+model:
+  type: 'resnet20'
+training:
+  loss_fn: 'cross_entropy'
+  lr: 0.1
+  train_batch_size: 256
+  eval_batch_size: 512
+  optimizer: 'sgd'
+  momentum: 0.9
+  weight_decay: 0.0001
+split:
+  type: "iid"
+  require_local_test: True
+  require_local_val: True
+  global_local_ratio: 0.1
+federation:
+  num_clients: 10
+  local_rounds: 3
+  num_epochs: 50
+  clients_per_round: 3
+  aggregation: "fedavg"
+noise:
+  require_noise: False
+  type: "None"
+  ratio: 0
+scaling:
+  require_scaling: True
+  type: "ts"
+  hidden_neurons: 100
+  lr: 0.001
+  max_iter: 100
+  train_ts_at_end: False
+  aggregation: "fedavg"
